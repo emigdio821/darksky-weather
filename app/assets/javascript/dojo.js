@@ -3,7 +3,7 @@ const API_URL =
 
 require(["dojo/dom", "dojo/dom-construct"], function(dom, domConstruct) {
   var greetingNode = dom.byId("greeting");
-  domConstruct.place("<em> there!</em>", greetingNode);
+  domConstruct.place("<b> DarkSky Weather</b>", greetingNode);
 });
 
 var loader;
@@ -27,7 +27,7 @@ require(["dojo/_base/declare", "dojo/dom", "dojo/dom-style"], function(
   loader = new Loader();
 });
 
-require(["dojo/domReady!"], function() {
+require(["dojo/domReady!", "dojo/request"], function() {
   if (!navigator.geolocation) {
     alert("Geolocation is not supported by your browser :(");
   } else {
@@ -36,23 +36,22 @@ require(["dojo/domReady!"], function() {
   loader.onHideLoader();
 });
 
+
 function successPosition(position) {
   const latitude = position.coords.latitude;
   const longitude = position.coords.longitude;
   const skyUrl = `${API_URL}${latitude},${longitude}`;
 
-  fetch(skyUrl)
-    .then(resolve => {
-      if (resolve.ok) {
-        console.log(resolve.json());
-      } else {
-        throw new Error(
-          "We are sorry, we were not able to get the forecast data :("
-        );
+  require(["dojo/request"], function(request) {
+    request(skyUrl).then(
+      function(data) {
+        console.log(JSON.parse(data));
+      },
+      function(error) {
+        console.log("An error occurred: " + error);
       }
-    })
-    .then(data => {})
-    .catch(error => {});
+    );
+  });
 }
 
 function errorPosition() {
