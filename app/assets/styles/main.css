@@ -24,6 +24,7 @@ footer {
 
 .social-links a:hover {
   text-decoration: none;
+  background-color: #404040;
 }
 
 .modal {
