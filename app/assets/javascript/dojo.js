@@ -83,16 +83,26 @@ function successPosition(position) {
             '<div class="modal-dialog" role="document">' +
             '<div class="modal-content">' +
             '<div class="modal-header">' +
-            '<h5 class="modal-title" id="forecastModalLabel">Forecast for the next hours <i class="fas fa-wind"></i></h5>' +
+            '<h5 class="modal-title" id="forecastModalLabel">Forecast <i class="fas fa-wind"></i></h5>' +
             '<button type="button" class="close" data-dismiss="modal" aria-label="Close">' +
             '<span aria-hidden="true">&times;</span>' +
             "</button>" +
             "</div>" +
             '<div class="modal-body">' +
-            '<canvas id="modal-weather-icon" width="64" height="64"></canvas>' +
+            '<canvas id="hourly-modal-weather-icon" width="64" height="64"></canvas>' +
             `<h5 class="card-title">~ ${d.hourly.data[0].temperature} ºF</h5>` +
-            '<h6 class="card-subtitle mb-1 text-muted">Summary</h6>' +
+            '<h6 class="card-subtitle mb-1 text-muted">Summary for the next hours</h6>' +
             `<p>${d.hourly.summary}</p>` +
+            "<hr>" +
+            '<canvas id="daily-modal-weather-icon" width="64" height="64"></canvas>' +
+            `<h5 class="card-title mb-1">Min temp: ${
+              d.daily.data[0].temperatureMin
+            } ºF</h5>` +
+            `<h5 class="card-title">Max temp: ${
+              d.daily.data[0].temperatureMax
+            } ºF</h5>` +
+            '<h6 class="card-subtitle mb-1 text-muted">Summary for the next days</h6>' +
+            `<p>${d.daily.summary}</p>` +
             "</div>" +
             '<div class="modal-footer">' +
             '<button type="button" class="btn btn-info" data-dismiss="modal">Cool! <i class="fas fa-heart"></i></button>' +
@@ -105,7 +115,8 @@ function successPosition(position) {
           }
         );
         skycons.add("weather-icon", d.currently.icon);
-        skycons.add("modal-weather-icon", d.hourly.icon);
+        skycons.add("hourly-modal-weather-icon", d.hourly.icon);
+        skycons.add("daily-modal-weather-icon", d.daily.icon);
         skycons.play();
         loader.onHideLoader();
       });
