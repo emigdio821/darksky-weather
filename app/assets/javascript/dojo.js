@@ -23,7 +23,7 @@ require(["dojo/_base/declare", "dojo/dom", "dojo/dom-style"], function(
       domStyle.set(this.overlayNode, "display", "none");
     },
     onShowLoader: function() {
-      domStyle.set(this.overlayNode, "display", "initial");
+      domStyle.set(this.overlayNode, "display", "flex");
     }
   });
   loader = new Loader();
