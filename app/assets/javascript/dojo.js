@@ -95,12 +95,14 @@ function successPosition(position) {
             `<p>${d.hourly.summary}</p>` +
             "<hr>" +
             '<canvas id="daily-modal-weather-icon" width="64" height="64"></canvas>' +
-            `<h5 class="card-title mb-1">Min temp: ${
-              d.daily.data[0].temperatureMin
-            } ºF</h5>` +
-            `<h5 class="card-title">Max temp: ${
-              d.daily.data[0].temperatureMax
-            } ºF</h5>` +
+            `<h5 class="card-title mb-1">Min temp: ${minTemp(
+              d.daily.data,
+              "temperatureMin"
+            )} ºF</h5>` +
+            `<h5 class="card-title">Max temp: ${maxTemp(
+              d.daily.data,
+              "temperatureMax"
+            )} ºF</h5>` +
             '<h6 class="card-subtitle mb-1 text-muted">Summary for the next days</h6>' +
             `<p>${d.daily.summary}</p>` +
             "</div>" +
@@ -159,4 +161,20 @@ function unixToDate(time) {
   var hr = dt.getHours();
   var minutes = "0" + dt.getMinutes();
   return hr + ":" + minutes.substr(-2);
+}
+
+function maxTemp(arr, prop) {
+  var max;
+  for (var i = 0; i < arr.length; i++) {
+    if (!max || parseInt(arr[i][prop]) > parseInt(max[prop])) max = arr[i];
+  }
+  return max[prop];
+}
+
+function minTemp(arr, prop) {
+  var min;
+  for (var i = 0; i < arr.length; i++) {
+    if (!min || parseInt(arr[i][prop]) < parseInt(min[prop])) min = arr[i];
+  }
+  return min[prop];
 }
