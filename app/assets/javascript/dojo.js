@@ -35,6 +35,18 @@ require(["dojo/domReady!"], function() {
 
 function loadWeahterData(reloaded) {
   if (!navigator.geolocation) {
+    require(["dojo/html", "dojo/dom"], function(html, dom) {
+      html.set(
+        dom.byId("card-content"),
+        '<div class="alert alert-danger" role="alert">' +
+          "Geolocation is not supported by your browser :( " +
+          "</div > ",
+        {
+          parseContent: true
+        }
+      );
+      loader.onHideLoader();
+    });
     alert("Geolocation is not supported by your browser :(");
   } else {
     loader.onShowLoader();
@@ -129,7 +141,6 @@ function successPosition(position) {
         dom.byId("card-content"),
         '<div class="alert alert-danger" role="alert">' +
           `An error ocurred: ${error}` +
-          '<a href="#" onClick="document.location.reload(true)" class="alert-link">refreshing</a> the page.' +
           "</div>",
         {
           parseContent: true
