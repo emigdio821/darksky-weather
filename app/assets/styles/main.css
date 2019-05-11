@@ -1,6 +1,6 @@
 html {
-  position: relative;
   min-height: 100%;
+  position: relative;
 }
 
 body {
@@ -10,21 +10,29 @@ body {
 }
 
 footer {
-  position: absolute;
   bottom: 0;
   width: 100%;
   height: 120px;
+  position: absolute;
   background-color: #212121;
 }
 
 .social-links a {
   border-radius: 4px;
-  transition: all 0.3s;
+  transition: background-color 0.3s;
 }
 
 .social-links a:hover {
   text-decoration: none;
   background-color: #404040;
+}
+
+.card {
+  transition: box-shadow 0.3s;
+}
+
+.card:hover {
+  box-shadow: 0 1rem 3rem rgba(0,0,0,.175);
 }
 
 .modal {
@@ -34,9 +42,12 @@ footer {
 #main-loader {
   width: 100%;
   height: 100%;
+  display: none;
+  z-index: 3000;
   position: absolute;
-  background: rgba(0, 0, 0, 0.2);
+  background: rgba(0, 0, 0, 0.6);
 }
+
 .spinner-grow {
   top: 34%;
   left: 50%;

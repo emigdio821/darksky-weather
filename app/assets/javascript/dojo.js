@@ -1,6 +1,8 @@
 const API_URL =
   "https://cors-anywhere.herokuapp.com/https://api.darksky.net/forecast/a34e3e425d9f4cf8828749e34ba822fc/";
 
+var skycons = new Skycons();
+
 require(["dojo/dom", "dojo/dom-construct"], function(dom, domConstruct) {
   var greetingNode = dom.byId("greeting");
   domConstruct.place("<b> DarkSky Weather</b>", greetingNode);
@@ -27,15 +29,25 @@ require(["dojo/_base/declare", "dojo/dom", "dojo/dom-style"], function(
   loader = new Loader();
 });
 
-require(["dojo/domReady!", "dojo/request"], function() {
+require(["dojo/domReady!"], function() {
+  loadWeahterData();
+});
+
+function loadWeahterData(reloaded) {
   if (!navigator.geolocation) {
     alert("Geolocation is not supported by your browser :(");
   } else {
+    loader.onShowLoader();
+    if (reloaded) onDestroyWidget();
     navigator.geolocation.getCurrentPosition(successPosition, errorPosition);
   }
-  loader.onHideLoader();
-});
+}
 
+function onDestroyWidget() {
+  require(["dojo/dom-construct"], function(domConstruct) {
+    domConstruct.destroy("weather-card");
+  });
+}
 
 function successPosition(position) {
   const latitude = position.coords.latitude;
@@ -43,17 +55,97 @@ function successPosition(position) {
   const skyUrl = `${API_URL}${latitude},${longitude}`;
 
   require(["dojo/request"], function(request) {
-    request(skyUrl).then(
-      function(data) {
-        console.log(JSON.parse(data));
-      },
-      function(error) {
-        console.log("An error occurred: " + error);
-      }
-    );
+    request(skyUrl).then(function(data) {
+      var d = JSON.parse(data);
+      require(["dojo/html", "dojo/dom", "dojo/domReady!"], function(html, dom) {
+        html.set(
+          dom.byId("card-content"),
+          '<h5 class="mb-4">Here\'s your current location weather <i class="far fa-smile-beam"></i></h5>' +
+            '<div id="weather-card" class="card mx-auto mb-" style="width: 24rem;">' +
+            '<div class="card-body">' +
+            '<canvas id="weather-icon" width="64" height="64"></canvas>' +
+            `<h5 class="card-title">${d.currently.temperature} ºF</h5>` +
+            '<h6 class="card-subtitle mb-1 text-muted">Summary</h6>' +
+            `<p class="card-text font-weight-bold">${unixToDate(
+              d.currently.time
+            )} hrs - ${d.currently.summary}</p>` +
+            `<p class="card-text m-0"><span class="font-weight-bold">Humidity: </span>${
+              d.currently.humidity
+            }%</p>` +
+            `<p class="card-text"><span class="font-weight-bold">Wind: </span>${
+              d.currently.windSpeed
+            } MPH</p>` +
+            '<a href="#" class="btn btn-info mr-2" data-toggle="modal" data-target="#forecastModal">Forecast <i class="fas fa-wind"></i></a>' +
+            '<a href="#" class="btn btn-info" onClick="loadWeahterData(true)">Reload <i class="fas fa-sync-alt"></i></i></a>' +
+            "</div>" +
+            "</div>" +
+            '<div class="modal fade" id="forecastModal" tabindex="-1" role="dialog" aria-labelledby="forecastModalLabel" aria-hidden="true">' +
+            '<div class="modal-dialog" role="document">' +
+            '<div class="modal-content">' +
+            '<div class="modal-header">' +
+            '<h5 class="modal-title" id="forecastModalLabel">Forecast for the next hours <i class="fas fa-wind"></i></h5>' +
+            '<button type="button" class="close" data-dismiss="modal" aria-label="Close">' +
+            '<span aria-hidden="true">&times;</span>' +
+            "</button>" +
+            "</div>" +
+            '<div class="modal-body">' +
+            '<canvas id="modal-weather-icon" width="64" height="64"></canvas>' +
+            `<h5 class="card-title">~ ${d.hourly.data[0].temperature} ºF</h5>` +
+            '<h6 class="card-subtitle mb-1 text-muted">Summary</h6>' +
+            `<p>${d.hourly.summary}</p>` +
+            "</div>" +
+            '<div class="modal-footer">' +
+            '<button type="button" class="btn btn-info" data-dismiss="modal">Cool! <i class="fas fa-heart"></i></button>' +
+            "</div>" +
+            "</div>" +
+            "</div>" +
+            "</div>",
+          {
+            parseContent: true
+          }
+        );
+        skycons.add("weather-icon", d.currently.icon);
+        skycons.add("modal-weather-icon", d.hourly.icon);
+        skycons.play();
+        loader.onHideLoader();
+      });
+    });
+  }, function(error) {
+    require(["dojo/html", "dojo/dom"], function(html, dom) {
+      html.set(
+        dom.byId("card-content"),
+        '<div class="alert alert-danger" role="alert">' +
+          `An error ocurred: ${error}` +
+          '<a href="#" onClick="document.location.reload(true)" class="alert-link">refreshing</a> the page.' +
+          "</div>",
+        {
+          parseContent: true
+        }
+      );
+      loader.onHideLoader();
+    });
   });
 }
 
 function errorPosition() {
-  alert("We cannot get your location, sorry.");
+  require(["dojo/html", "dojo/dom"], function(html, dom) {
+    html.set(
+      dom.byId("card-content"),
+      '<div class="alert alert-danger" role="alert">' +
+        "We could not retrieve your location, please check your location settings or try " +
+        '<a href="#" onClick="document.location.reload(true)" class="alert-link">refreshing</a> the page.' +
+        "</div > ",
+      {
+        parseContent: true
+      }
+    );
+    loader.onHideLoader();
+  });
+}
+
+function unixToDate(time) {
+  var dt = new Date(time * 1000);
+  var hr = dt.getHours();
+  var minutes = "0" + dt.getMinutes();
+  return hr + ":" + minutes.substr(-2);
 }
