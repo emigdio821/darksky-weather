@@ -61,7 +61,7 @@ function successPosition(position) {
         html.set(
           dom.byId("card-content"),
           '<h5 class="mb-4">Here\'s your current location weather <i class="far fa-smile-beam"></i></h5>' +
-            '<div id="weather-card" class="card mx-auto mb-" style="width: 24rem;">' +
+            '<div id="weather-card" class="card mx-auto mb-" style="max-width: 20rem;">' +
             '<div class="card-body">' +
             '<canvas id="weather-icon" width="64" height="64"></canvas>' +
             `<h5 class="card-title">${d.currently.temperature} ºF</h5>` +
